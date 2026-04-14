@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx *)",
+      "Bash(mkdir *)",
+      "Bash(npm run *)",
+      "Bash(node *)",
+      "Bash(cat)",
+      "Bash(\"mode\": *)",
+      "Bash(\"customfillers\": *)",
+      "Bash(\"customphrases\": *)",
+      "Bash(\"at the end of the day\": *)",
+      "Bash(})",
+      "Bash(eof)",
+      "Bash(npm install *)",
+      "Bash(npm test)",
+      "Bash(echo *)",
+      "Bash(rm *)"
+    ]
+  },
+  "$version": 3
+}

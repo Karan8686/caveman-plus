@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# IDE/System
+.vscode/
+.idea/
+.DS_Store
+*.log
+.eslintcache
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Tests
+coverage/
+.vitest-results/

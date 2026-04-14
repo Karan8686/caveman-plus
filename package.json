@@ -1,0 +1,66 @@
+{
+  "name": "caveman-plus",
+  "version": "1.0.0",
+  "description": "Intelligent text compression for AI workflows. Reduce tokens by 40-70% while preserving code, errors, and technical meaning.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "caveman": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/adapters/cli.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts src/adapters/cli.ts --format cjs,esm --watch --dts",
+    "clean": "rimraf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "compression",
+    "text-compression",
+    "ai",
+    "token-reduction",
+    "filler-words",
+    "verbose",
+    "concise",
+    "llm",
+    "prompt-engineering",
+    "context-aware",
+    "markdown",
+    "streaming",
+    "cli"
+  ],
+  "author": "Karan8686 <Kpalav098@gmail.com>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Karan8686/caveman-plus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Karan8686/caveman-plus/issues"
+  },
+  "homepage": "https://github.com/Karan8686/caveman-plus#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
+  }
+}
