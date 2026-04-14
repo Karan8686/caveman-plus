@@ -1,6 +1,6 @@
 {
   "name": "caveman-plus",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Intelligent text compression for AI workflows. Reduce tokens by 40-70% while preserving code, errors, and technical meaning.",
   "type": "module",
   "main": "./dist/index.cjs",

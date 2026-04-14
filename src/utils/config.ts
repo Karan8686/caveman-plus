@@ -15,7 +15,7 @@ import { homedir } from 'node:os';
 
 // Helpers for safe Node API calls
 const nodeExistsSync = (p: string) => existsSync(p);
-const nodeReadFileSync = (p: string, enc: any) => readFileSync(p, enc);
+const nodeReadFileSync = (p: string, enc: 'utf-8'): string => readFileSync(p, enc) as string;
 const nodeStatSync = (p: string) => statSync(p);
 const nodeDirname = (p: string) => dirname(p);
 const nodeResolve = (...args: string[]) => resolve(...args);
