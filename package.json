@@ -5,16 +5,18 @@
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
+  "browser": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "caveman": "./dist/cli.js"
+    "caveman": "./dist/adapters/cli.js"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -26,7 +28,8 @@
     "clean": "rimraf dist",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "prepack": "chmod +x dist/adapters/cli.js"
   },
   "keywords": [
     "compression",
@@ -43,7 +46,7 @@
     "streaming",
     "cli"
   ],
-  "author": "Karan8686 <Kpalav098@gmail.com>",
+  "author": "Karan Palav <Kpalav098@gmail.com>",
   "license": "ISC",
   "repository": {
     "type": "git",
@@ -53,6 +56,11 @@
     "url": "https://github.com/Karan8686/caveman-plus/issues"
   },
   "homepage": "https://github.com/Karan8686/caveman-plus#readme",
+  "browser": {
+    "node:fs": false,
+    "node:path": false,
+    "node:os": false
+  },
   "engines": {
     "node": ">=18.0.0"
   },

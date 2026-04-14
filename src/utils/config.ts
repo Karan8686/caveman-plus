@@ -13,6 +13,15 @@ import {
 import { dirname, resolve } from 'node:path';
 import { homedir } from 'node:os';
 
+// Helpers for safe Node API calls
+const nodeExistsSync = (p: string) => existsSync(p);
+const nodeReadFileSync = (p: string, enc: any) => readFileSync(p, enc);
+const nodeStatSync = (p: string) => statSync(p);
+const nodeDirname = (p: string) => dirname(p);
+const nodeResolve = (...args: string[]) => resolve(...args);
+const nodeHomedir = () => homedir();
+const nodeCwd = () => process.cwd();
+
 /**
  * Configuration options loaded from caveman.config.json
  */
@@ -74,22 +83,22 @@ const CONFIG_FILENAMES = ['caveman.config.json', '.cavemanrc'];
  * walking up parent directories until found or root is reached.
  * Supports both 'caveman.config.json' and '.cavemanrc'.
  */
-export function findConfig(startDir: string = process.cwd()): ConfigResult {
+export function findConfig(startDir: string = nodeCwd()): ConfigResult {
   let current = startDir;
 
   while (true) {
     for (const filename of CONFIG_FILENAMES) {
-      const configPath = resolve(current, filename);
+      const configPath = nodeResolve(current, filename);
 
-      if (existsSync(configPath)) {
-        const stat = statSync(configPath);
-        if (stat.isFile()) {
+      if (nodeExistsSync(configPath)) {
+        const stat = nodeStatSync(configPath);
+        if (stat?.isFile?.()) {
           return { config: null, configPath };
         }
       }
     }
 
-    const parent = dirname(current);
+    const parent = nodeDirname(current);
     if (parent === current) {
       break;
     }
@@ -104,7 +113,7 @@ export function findConfig(startDir: string = process.cwd()): ConfigResult {
  */
 export function loadConfigFile(path: string): CavemanConfig {
   try {
-    const raw = readFileSync(path, 'utf-8');
+    const raw = nodeReadFileSync(path, 'utf-8');
     return JSON.parse(raw);
   } catch {
     return {};
@@ -116,7 +125,7 @@ export function loadConfigFile(path: string): CavemanConfig {
  * Checks cwd → parent directories → home directory.
  * Supports both 'caveman.config.json' and '.cavemanrc'.
  */
-export function loadConfig(startDir: string = process.cwd()): CavemanConfig {
+export function loadConfig(startDir: string = nodeCwd()): CavemanConfig {
   const { configPath } = findConfig(startDir);
 
   if (configPath) {
@@ -124,11 +133,13 @@ export function loadConfig(startDir: string = process.cwd()): CavemanConfig {
   }
 
   // Fall back to home directory config files
-  const homeDir = homedir();
-  for (const filename of CONFIG_FILENAMES) {
-    const homeConfig = resolve(homeDir, filename);
-    if (existsSync(homeConfig)) {
-      return loadConfigFile(homeConfig);
+  const homeDir = nodeHomedir();
+  if (homeDir) {
+    for (const filename of CONFIG_FILENAMES) {
+      const homeConfig = nodeResolve(homeDir, filename);
+      if (nodeExistsSync(homeConfig)) {
+        return loadConfigFile(homeConfig);
+      }
     }
   }
 

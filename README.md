@@ -21,6 +21,14 @@ AI models tend to be unnecessarily verbose. Caveman+ fixes that:
 
 Works seamlessly with **Qwen Code**, **Claude**, **ChatGPT**, and any AI tool that produces verbose output.
 
+## Compatibility
+
+Caveman Plus is designed to be universal and isomorphic:
+- **Node.js**: Supports Node 18+ (both ESM and CommonJS).
+- **Browsers**: Native support for modern browsers and bundlers (Vite, Webpack, etc.).
+- **CLI**: Fully functional command-line interface.
+- **TypeScript**: First-class type definitions included.
+
 ## Installation
 
 ```bash
