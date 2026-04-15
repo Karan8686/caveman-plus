@@ -21,12 +21,11 @@
   },
   "files": [
     "dist",
-    "README.md",
-    "SKILLS-INSTALL.md"
+    "README.md"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/adapters/cli.ts --format cjs,esm --dts --clean",
-    "dev": "tsup src/index.ts src/adapters/cli.ts --format cjs,esm --watch --dts",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "clean": "rimraf dist",
     "test": "vitest run",
     "test:watch": "vitest",
