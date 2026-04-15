@@ -1,5 +1,7 @@
 # Caveman+
 
+> 🪨 **[Try the Live Playground →](https://Karan8686.github.io/caveman-plus/playground/)** — paste any AI text, see compression in real-time. No code needed.
+
 **Reduce AI output tokens by 40-70% while preserving all technical meaning.**
 
 Caveman+ is an intelligent text compression library that removes filler words, shortens verbose phrases, and normalizes whitespace. Built for AI workflows, developer tools, and any scenario where concise text matters.

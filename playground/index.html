@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caveman+ Playground — Compress AI Text, Save Tokens</title>
+  <meta name="description" content="Reduce AI output tokens by 40–70% instantly. Paste any verbose AI text and watch caveman-plus compress it in real-time. No code required." />
+  <meta property="og:title" content="Caveman+ Playground — Compress AI Text" />
+  <meta property="og:description" content="why use many token when few token do trick" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #09090f;
+      --surface:      rgba(255,255,255,0.035);
+      --surface-hover:rgba(255,255,255,0.06);
+      --border:       rgba(255,255,255,0.08);
+      --border-focus: rgba(251,146,60,0.5);
+      --accent:       #fb923c;
+      --accent-dim:   rgba(251,146,60,0.15);
+      --accent-glow:  rgba(251,146,60,0.25);
+      --text:         #e2e8f0;
+      --text-muted:   #64748b;
+      --text-dim:     #94a3b8;
+      --green:        #34d399;
+      --green-dim:    rgba(52,211,153,0.12);
+      --red:          #f87171;
+      --red-dim:      rgba(248,113,113,0.12);
+      --purple:       #a78bfa;
+      --purple-dim:   rgba(167,139,250,0.12);
+      --radius:       14px;
+      --radius-sm:    8px;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ── Background grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(251,146,60,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(251,146,60,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, rgba(251,146,60,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 32px 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      font-size: 28px;
+      line-height: 1;
+      filter: drop-shadow(0 0 12px rgba(251,146,60,0.4));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .logo-name {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fb923c, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-tagline {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .npm-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .npm-badge:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .npm-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* ── Headline ── */
+    .headline {
+      text-align: center;
+      padding: 12px 0 32px;
+    }
+
+    .headline h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .headline h1 .highlight {
+      background: linear-gradient(135deg, #fb923c 0%, #fbbf24 50%, #fb923c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .headline p {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Mode Tabs ── */
+    .modes-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mode-tabs {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .mode-tab {
+      padding: 7px 18px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+    }
+
+    .mode-tab:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+
+    .mode-tab.active {
+      background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(251,191,36,0.15));
+      color: var(--accent);
+      border: 1px solid rgba(251,146,60,0.25);
+      box-shadow: 0 0 12px rgba(251,146,60,0.1);
+    }
+
+    .mode-tab .mode-emoji {
+      font-size: 14px;
+    }
+
+    /* ── Options row ── */
+    .options-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-label input[type="checkbox"] {
+      appearance: none;
+      width: 32px;
+      height: 18px;
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .toggle-label input[type="checkbox"]:checked {
+      background: var(--accent-dim);
+      border-color: rgba(251,146,60,0.4);
+    }
+
+    .toggle-label input[type="checkbox"]::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .toggle-label input[type="checkbox"]:checked::after {
+      left: 16px;
+      background: var(--accent);
+    }
+
+    /* ── Split Pane ── */
+    .split-pane {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .split-pane { grid-template-columns: 1fr; }
+    }
+
+    .pane {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .pane:focus-within {
+      border-color: var(--border-focus);
+    }
+
+    .pane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .pane-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pane-label .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .pane-label .dot.orange { background: #fb923c; }
+    .pane-label .dot.green  { background: #34d399; }
+
+    .word-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pane textarea,
+    .pane .output-box {
+      flex: 1;
+      width: 100%;
+      min-height: 320px;
+      padding: 16px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.7;
+      font-family: 'Inter', sans-serif;
+      resize: none;
+    }
+
+    .pane textarea::placeholder {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .pane .output-box {
+      display: block;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .output-box.empty {
+      color: var(--text-muted);
+      font-style: italic;
+      opacity: 0.5;
+    }
+
+    /* Diff highlighting */
+    .removed { color: var(--red); text-decoration: line-through; opacity: 0.6; }
+    .added   { color: var(--green); }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .stats-bar {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .stats-bar .divider { display: none; }
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+    }
+
+    .stat.before .stat-value { color: var(--text-dim); }
+    .stat.after  .stat-value { color: var(--green); }
+    .stat.saved  .stat-value { color: var(--purple); }
+    .stat.pct    .stat-value { color: var(--accent); }
+
+    .divider {
+      width: 1px;
+      height: 40px;
+      background: var(--border);
+    }
+
+    /* ── Token bar ── */
+    .token-bar-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 24px;
+      margin-bottom: 16px;
+    }
+
+    .token-bar-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 600;
+    }
+
+    .token-bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .token-bar-fill-before {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      background: rgba(100,116,139,0.3);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .token-bar-fill-after {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #fb923c, #34d399);
+      border-radius: 4px;
+      transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 0 12px rgba(251,146,60,0.4);
+    }
+
+    /* ── Actions ── */
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(251,191,36,0.15));
+      border-color: rgba(251,146,60,0.35);
+      color: var(--accent);
+    }
+
+    .btn.primary:hover {
+      background: linear-gradient(135deg, rgba(251,146,60,0.3), rgba(251,191,36,0.2));
+      box-shadow: 0 0 20px rgba(251,146,60,0.15);
+    }
+
+    .btn.success {
+      background: var(--green-dim);
+      border-color: rgba(52,211,153,0.3);
+      color: var(--green);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: rgba(15,15,25,0.95);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 20px;
+      font-size: 13px;
+      color: var(--text);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 0;
+      text-align: center;
+    }
+
+    footer p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    footer code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── Caveman vibe banner ── */
+    .vibe-banner {
+      background: linear-gradient(135deg, rgba(251,146,60,0.08), rgba(251,191,36,0.05));
+      border: 1px solid rgba(251,146,60,0.12);
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .vibe-text {
+      font-size: 13px;
+      color: rgba(251,146,60,0.8);
+      font-style: italic;
+    }
+
+    .mode-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Pulse animation for active compression */
+    @keyframes pulse-border {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(251,146,60,0); }
+      50% { box-shadow: 0 0 0 3px rgba(251,146,60,0.15); }
+    }
+
+    .pane.compressing {
+      animation: pulse-border 1s ease-in-out 2;
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <span class="logo-icon">🪨</span>
+      <div class="logo-text">
+        <span class="logo-name">caveman+</span>
+        <span class="logo-tagline">AI Text Compression</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="npm-badge" onclick="copyNpm()" title="Click to copy">
+        <span class="dot"></span>
+        npm install caveman-plus
+      </div>
+    </div>
+  </header>
+
+  <!-- Headline -->
+  <div class="headline">
+    <h1>why use <span class="highlight">many token</span><br>when few token do trick</h1>
+    <p>Paste any verbose AI output below and watch it shrink. No code, no API — pure deterministic compression.</p>
+  </div>
+
+  <!-- Vibe banner -->
+  <div class="vibe-banner">
+    <span class="vibe-text" id="vibeText">🪨 UGG. paste text. caveman compress. brain still big.</span>
+    <span class="mode-description" id="modeDesc">Full mode: removes all filler words and compresses verbose phrases</span>
+  </div>
+
+  <!-- Mode tabs + options -->
+  <div class="modes-bar">
+    <div class="mode-tabs" role="tablist" aria-label="Compression mode">
+      <button class="mode-tab" data-mode="lite"  id="tab-lite"  onclick="setMode('lite')"  role="tab"><span class="mode-emoji">🪶</span> Lite</button>
+      <button class="mode-tab active" data-mode="full"  id="tab-full"  onclick="setMode('full')"  role="tab"><span class="mode-emoji">🪨</span> Full</button>
+      <button class="mode-tab" data-mode="ultra" id="tab-ultra" onclick="setMode('ultra')" role="tab"><span class="mode-emoji">🔥</span> Ultra</button>
+    </div>
+    <div class="options-row">
+      <label class="toggle-label">
+        <input type="checkbox" id="toggleDiff" onchange="updateOutput()" />
+        Highlight removed
+      </label>
+    </div>
+  </div>
+
+  <!-- Split Pane -->
+  <div class="split-pane">
+    <!-- Input -->
+    <div class="pane" id="inputPane">
+      <div class="pane-header">
+        <span class="pane-label"><span class="dot orange"></span>Original</span>
+        <span class="word-count" id="beforeWords">0 words</span>
+      </div>
+      <textarea
+        id="inputText"
+        placeholder="Paste any verbose AI response here…&#10;&#10;Example: &quot;It is important to note that this is basically just a really long sentence that could definitely be compressed quite a bit.&quot;"
+        oninput="onInput()"
+        spellcheck="false"
+      ></textarea>
+    </div>
+
+    <!-- Output -->
+    <div class="pane" id="outputPane">
+      <div class="pane-header">
+        <span class="pane-label"><span class="dot green"></span>Compressed</span>
+        <span class="word-count" id="afterWords">0 words</span>
+      </div>
+      <div class="output-box empty" id="outputText" role="region" aria-live="polite">
+        Compressed output will appear here…
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" aria-label="Compression statistics">
+    <div class="stat before">
+      <span class="stat-value" id="tokensBefore">—</span>
+      <span class="stat-label">Tokens Before</span>
+    </div>
+    <div class="divider"></div>
+    <div class="stat after">
+      <span class="stat-value" id="tokensAfter">—</span>
+      <span class="stat-label">Tokens After</span>
+    </div>
+    <div class="divider"></div>
+    <div class="stat saved">
+      <span class="stat-value" id="tokensSaved">—</span>
+      <span class="stat-label">Tokens Saved</span>
+    </div>
+    <div class="divider"></div>
+    <div class="stat pct">
+      <span class="stat-value" id="reductionPct">—</span>
+      <span class="stat-label">Reduction</span>
+    </div>
+  </div>
+
+  <!-- Token bar -->
+  <div class="token-bar-wrap">
+    <div class="token-bar-label">Token Compression</div>
+    <div class="token-bar-track">
+      <div class="token-bar-fill-before" id="barBefore"></div>
+      <div class="token-bar-fill-after"  id="barAfter" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn" id="clearBtn" onclick="clearAll()">
+      🗑️ Clear
+    </button>
+    <button class="btn" onclick="loadExample()">
+      ✨ Load Example
+    </button>
+    <button class="btn" onclick="shareUrl()">
+      🔗 Share Link
+    </button>
+    <button class="btn primary" onclick="copyOutput()" id="copyBtn">
+      📋 Copy Compressed
+    </button>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="wrapper">
+    <p>
+      Use in code: <code>npm install caveman-plus</code> &nbsp;·&nbsp;
+      <a href="https://github.com/Karan8686/caveman-plus" target="_blank" rel="noopener">GitHub</a> &nbsp;·&nbsp;
+      <a href="https://www.npmjs.com/package/caveman-plus" target="_blank" rel="noopener">npm</a>
+    </p>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="alert"></div>
+
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  COMPRESSION ENGINE (ported from caveman-plus TypeScript source)
+// ═══════════════════════════════════════════════════════════════
+
+const DEFAULT_FILLERS_LITE = ['just', 'very', 'really'];
+
+const DEFAULT_FILLERS_FULL = [
+  'actually','basically','just','very','really','literally','simply',
+  'totally','completely','absolutely','obviously','clearly','certainly',
+  'probably','maybe','perhaps','quite','somewhat','rather','pretty',
+  'kind of','sort of',
+];
+
+const DEFAULT_FILLERS_ULTRA = [
+  ...DEFAULT_FILLERS_FULL,
+  'essentially','fundamentally','indeed','undoubtedly','admittedly',
+  'interestingly','notably','importantly','significantly','currently',
+  'effectively','truly','highly','greatly','extremely',
+];
+
+const DEFAULT_PHRASES = {
+  'the reason is because': 'because',
+  'the reason being that': 'because',
+  'due to the fact that': 'because',
+  'owing to the fact that': 'because',
+  'in order to': 'to',
+  'so as to': 'to',
+  'it is important to note that': '',
+  'it is worth noting that': '',
+  'it should be noted that': '',
+  'it is worth mentioning that': '',
+  'needless to say': '',
+  'it goes without saying': '',
+  'at this point in time': 'now',
+  'at the present time': 'now',
+  'at the end of the day': 'ultimately',
+  'in the near future': 'soon',
+  'for the purpose of': 'for',
+  'with the exception of': 'except',
+  'in the event that': 'if',
+  'in case of': 'if',
+  'as a matter of fact': '',
+  'for all intents and purposes': '',
+  'in my honest opinion': '',
+  'to be honest': '',
+  'to tell you the truth': '',
+  'as far as i am concerned': '',
+  'what i mean is': '',
+  'what i am trying to say is': '',
+  'let me make it clear': '',
+  'i would like to point out': '',
+  'it is generally believed that': '',
+  'there is no doubt that': '',
+  'without a shadow of a doubt': '',
+  'in conclusion': '',
+  'to sum up': '',
+  'all in all': '',
+  'on the other hand': 'however',
+  'in spite of': 'despite',
+  'regardless of the fact that': 'although',
+  'in spite of the fact that': 'although',
+  'prior to': 'before',
+  'subsequent to': 'after',
+  'with regard to': 'about',
+  'with respect to': 'about',
+  'in relation to': 'about',
+  'concerning the matter of': 'about',
+  'as soon as possible': 'quickly',
+  'at your earliest convenience': 'soon',
+  'on a daily basis': 'daily',
+  'on a regular basis': 'regularly',
+  'in a timely manner': 'promptly',
+  'for the most part': 'mostly',
+  'to a certain extent': 'somewhat',
+  'by means of': 'by',
+  'in accordance with': 'per',
+  'in conjunction with': 'with',
+  'in addition to': 'besides',
+  'in light of': 'given',
+  'in view of': 'given',
+  'as a result of': 'from',
+  'because of the fact that': 'because',
+  'furthermore': 'also',
+  'moreover': 'also',
+  'nevertheless': 'but',
+  'nonetheless': 'but',
+  'notwithstanding': 'despite',
+};
+
+const ULTRA_EXTRA_PHRASES = {
+  ...DEFAULT_PHRASES,
+  'i think': '',
+  'i believe': '',
+  'i feel': '',
+  'it seems like': '',
+  'it appears that': '',
+  'in summary': '',
+  'to summarize': '',
+  'as mentioned': '',
+  'as noted': '',
+  'please note that': '',
+  'please be aware that': '',
+  'you should know that': '',
+  'you may want to': '',
+  'you might want to': '',
+  'in other words': '',
+  'that is to say': '',
+  'in this case': '',
+  'in this situation': '',
+  'make sure to': '',
+  'ensure that you': '',
+  'be sure to': '',
+  'keep in mind': '',
+  'bear in mind': '',
+};
+
+function splitCodeBlocks(text) {
+  const parts = [];
+  const regex = /(`{3,}[\s\S]*?`{3,}|`[^`\n]+`)/g;
+  let last = 0, match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > last) parts.push({ type: 'text', content: text.slice(last, match.index) });
+    parts.push({ type: 'code', content: match[0] });
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) parts.push({ type: 'text', content: text.slice(last) });
+  return parts.length ? parts : [{ type: 'text', content: text }];
+}
+
+function removeFillersFromText(text, fillers) {
+  let t = text;
+  for (const filler of fillers) {
+    const escaped = filler.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const boundary = filler.includes(' ') ? '' : '\\b';
+    const regex = new RegExp(`${boundary}${escaped}${boundary}`, 'gi');
+    t = t.replace(regex, ' ').replace(/[^\S\n]+/g, ' ');
+  }
+  return t;
+}
+
+function compressPhrasesInText(text, phrases) {
+  let t = text;
+  const sorted = Object.entries(phrases).sort((a, b) => b[0].length - a[0].length);
+  for (const [phrase, replacement] of sorted) {
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`\\b${escaped}\\b`, 'gi');
+    t = t.replace(regex, replacement ? replacement : ' ')
+         .replace(/  +/g, ' ')
+         .replace(/ +([.,;!?])/g, '$1');
+  }
+  return t;
+}
+
+function normalizeWhitespace(text) {
+  return text
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/^ +| +$/gm, line => line.trimEnd())
+    .trim();
+}
+
+function processSegments(text, fn) {
+  return splitCodeBlocks(text)
+    .map(seg => seg.type === 'code' ? seg.content : fn(seg.content))
+    .join('');
+}
+
+function compress(text, mode) {
+  if (!text || !text.trim()) return '';
+  let result = text;
+
+  if (mode === 'lite') {
+    result = processSegments(result, t => removeFillersFromText(t, DEFAULT_FILLERS_LITE));
+  } else if (mode === 'full') {
+    result = processSegments(result, t => compressPhrasesInText(t, DEFAULT_PHRASES));
+    result = processSegments(result, t => removeFillersFromText(t, DEFAULT_FILLERS_FULL));
+  } else if (mode === 'ultra') {
+    result = processSegments(result, t => compressPhrasesInText(t, ULTRA_EXTRA_PHRASES));
+    result = processSegments(result, t => removeFillersFromText(t, DEFAULT_FILLERS_ULTRA));
+  }
+
+  return normalizeWhitespace(result);
+}
+
+function estimateTokens(text) {
+  if (!text || !text.trim()) return 0;
+  // ~4 chars per token is a decent approximation
+  return Math.max(1, Math.round(text.trim().split(/\s+/).length * 1.35));
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DIFF HIGHLIGHTER
+// ═══════════════════════════════════════════════════════════════
+
+function buildDiff(original, compressed) {
+  // Word-level diff: highlight removed words in original, show compressed clean
+  const origWords = original.split(/(\s+)/);
+  const compWords = new Set(compressed.toLowerCase().split(/\s+/));
+
+  return origWords.map(token => {
+    if (/^\s+$/.test(token)) return token;
+    const clean = token.toLowerCase().replace(/[^a-z0-9]/gi, '');
+    if (!clean) return token;
+    if (!compWords.has(clean)) {
+      return `<span class="removed">${escapeHtml(token)}</span>`;
+    }
+    return escapeHtml(token);
+  }).join('');
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE & UI
+// ═══════════════════════════════════════════════════════════════
+
+let currentMode = 'full';
+let debounceTimer = null;
+let lastInput = '';
+let lastOutput = '';
+
+const VIBE_LINES = {
+  lite: '🪶 lite mode. gentle compress. keep some word.',
+  full: '🪨 full mode. UGG. less word. brain still big.',
+  ultra: '🔥 ULTRA MODE. NO MERCY. WORD GO BYE BYE.',
+};
+
+const MODE_DESCS = {
+  lite: 'Lite mode: removes only obvious fillers (just, very, really)',
+  full: 'Full mode: removes all filler words and compresses verbose phrases',
+  ultra: 'Ultra mode: maximum compression — aggressive phrase and filler removal',
+};
+
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  document.getElementById('vibeText').textContent = VIBE_LINES[mode];
+  document.getElementById('modeDesc').textContent = MODE_DESCS[mode];
+  updateOutput();
+}
+
+function onInput() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(updateOutput, 150);
+}
+
+function updateOutput() {
+  const input = document.getElementById('inputText').value;
+  lastInput = input;
+
+  const beforeWords = input.trim() ? input.trim().split(/\s+/).length : 0;
+  document.getElementById('beforeWords').textContent = `${beforeWords} words`;
+
+  if (!input.trim()) {
+    resetStats();
+    const out = document.getElementById('outputText');
+    out.innerHTML = 'Compressed output will appear here…';
+    out.classList.add('empty');
+    document.getElementById('afterWords').textContent = '0 words';
+    return;
+  }
+
+  const output = compress(input, currentMode);
+  lastOutput = output;
+
+  const outEl = document.getElementById('outputText');
+  const showDiff = document.getElementById('toggleDiff').checked;
+
+  outEl.classList.remove('empty');
+
+  if (showDiff) {
+    outEl.innerHTML = buildDiff(input, output);
+  } else {
+    outEl.textContent = output;
+  }
+
+  const afterWords = output.trim() ? output.trim().split(/\s+/).length : 0;
+  document.getElementById('afterWords').textContent = `${afterWords} words`;
+
+  const tokBefore = estimateTokens(input);
+  const tokAfter  = estimateTokens(output);
+  const saved     = Math.max(0, tokBefore - tokAfter);
+  const pct       = tokBefore > 0 ? Math.round((saved / tokBefore) * 100) : 0;
+
+  document.getElementById('tokensBefore').textContent = tokBefore;
+  document.getElementById('tokensAfter').textContent  = tokAfter;
+  document.getElementById('tokensSaved').textContent  = saved;
+  document.getElementById('reductionPct').textContent = `${pct}%`;
+
+  // Update bar
+  const ratio = tokBefore > 0 ? (tokAfter / tokBefore) * 100 : 100;
+  document.getElementById('barAfter').style.width = Math.min(100, ratio) + '%';
+
+  // Pulse output pane
+  const pane = document.getElementById('outputPane');
+  pane.classList.remove('compressing');
+  void pane.offsetWidth;
+  pane.classList.add('compressing');
+}
+
+function resetStats() {
+  ['tokensBefore','tokensAfter','tokensSaved','reductionPct'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+  document.getElementById('barAfter').style.width = '0%';
+  document.getElementById('beforeWords').textContent = '0 words';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════════════════════
+
+function clearAll() {
+  document.getElementById('inputText').value = '';
+  updateOutput();
+}
+
+function copyNpm() {
+  navigator.clipboard.writeText('npm install caveman-plus').then(() => showToast('✅ Copied npm command!'));
+}
+
+function copyOutput() {
+  if (!lastOutput) { showToast('⚠️ Nothing to copy yet'); return; }
+  navigator.clipboard.writeText(lastOutput).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.classList.add('success');
+    btn.textContent = '✅ Copied!';
+    showToast('✅ Compressed text copied to clipboard!');
+    setTimeout(() => {
+      btn.classList.remove('success');
+      btn.innerHTML = '📋 Copy Compressed';
+    }, 2000);
+  });
+}
+
+function shareUrl() {
+  if (!lastInput.trim()) { showToast('⚠️ Paste some text first'); return; }
+  try {
+    const encoded = btoa(encodeURIComponent(JSON.stringify({ mode: currentMode, text: lastInput })));
+    const url = `${location.origin}${location.pathname}#share=${encoded}`;
+    navigator.clipboard.writeText(url).then(() => showToast('🔗 Share link copied!'));
+  } catch(e) {
+    showToast('⚠️ Text too long to share via URL');
+  }
+}
+
+const EXAMPLE_TEXT = `It is important to note that the reason your React component is re-rendering is basically because you're creating a new object reference on each and every render cycle. When you pass an inline object as a prop, React's shallow comparison actually sees it as a completely different object every single time, which then triggers a re-render. I would like to point out that you should probably use the useMemo hook in order to memoize the object and prevent this from happening.
+
+Furthermore, it is worth mentioning that in order to ensure that this fix works correctly, you should also make sure to include all the relevant dependencies in the useMemo dependency array. Needless to say, forgetting to add a dependency is a really common mistake that can lead to subtle and really hard-to-debug issues.`;
+
+function loadExample() {
+  document.getElementById('inputText').value = EXAMPLE_TEXT;
+  updateOutput();
+  showToast('✨ Example loaded!');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════════
+
+let toastTimer = null;
+
+function showToast(message) {
+  const t = document.getElementById('toast');
+  t.textContent = message;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  URL HASH RESTORE
+// ═══════════════════════════════════════════════════════════════
+
+function restoreFromHash() {
+  try {
+    const hash = location.hash;
+    if (!hash.startsWith('#share=')) return;
+    const encoded = hash.slice(7);
+    const decoded = JSON.parse(decodeURIComponent(atob(encoded)));
+    if (decoded.text) {
+      document.getElementById('inputText').value = decoded.text;
+      if (decoded.mode) setMode(decoded.mode);
+      else updateOutput();
+      showToast('🔗 Shared compression restored!');
+    }
+  } catch(e) { /* invalid hash, ignore */ }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', () => {
+  setMode('full');
+  restoreFromHash();
+});
+</script>
+</body>
+</html>
