@@ -15,7 +15,8 @@
       "Bash(npm install *)",
       "Bash(npm test)",
       "Bash(echo *)",
-      "Bash(rm *)"
+      "Bash(rm *)",
+      "Read(//Users/usesinspiration/Development/caveman-invs/**)"
     ]
   },
   "$version": 3

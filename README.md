@@ -33,6 +33,22 @@ Caveman Plus is designed to be universal and isomorphic:
 
 ## Installation
 
+### 🤖 Install in your AI coding tool
+
+Use caveman-plus as a skill/context for your AI coding assistant — it will automatically suggest or generate `caveman-plus` code when you're building AI apps:
+
+| Tool | Command |
+|---|---|
+| **Gemini CLI** | `gemini extensions install https://github.com/Karan8686/caveman-plus` |
+| **Claude Code** | `npx skills add Karan8686/caveman-plus` |
+| **Cursor** | `npx skills add Karan8686/caveman-plus -a cursor` |
+| **Windsurf** | `npx skills add Karan8686/caveman-plus -a windsurf` |
+| **Copilot** | `npx skills add Karan8686/caveman-plus -a github-copilot` |
+| **Cline** | `npx skills add Karan8686/caveman-plus -a cline` |
+| **Any other** | `npx skills add Karan8686/caveman-plus` |
+
+### 📦 Install as npm library
+
 ```bash
 npm install caveman-plus
 ```
@@ -42,6 +58,7 @@ Or use globally as a CLI tool:
 ```bash
 npm install -g caveman-plus
 ```
+
 
 ## Quick Start
 

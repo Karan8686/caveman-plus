@@ -16,7 +16,7 @@ interface CliArgs {
   file?: string;
 }
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 
 function parseArgs(args: string[]): CliArgs {
   let mode: CompressMode | undefined;
@@ -106,7 +106,7 @@ function parseArgs(args: string[]): CliArgs {
 
 function showHelp(): void {
   console.log(`
-Usage: caveman [options] <text>
+Usage: caveman-plus [options] <text>
 
 Compress verbose text by removing filler words, shortening phrases, and normalizing whitespace.
 
@@ -125,11 +125,11 @@ Config:
   CLI flags override config file values.
 
 Examples:
-  caveman "This is basically just a test"
-  caveman --mode ultra "It is important to note that..."
-  caveman --file input.md --mode ultra
-  caveman --stats "This is actually just a very long text."
-  cat input.md | caveman --mode full
+  caveman-plus "This is basically just a test"
+  caveman-plus --mode ultra "It is important to note that..."
+  caveman-plus --file input.md --mode ultra
+  caveman-plus --stats "This is actually just a very long text."
+  cat input.md | caveman-plus --mode full
 `);
 }
 
@@ -153,7 +153,6 @@ async function readInput(file: string | undefined, stdinText: string): Promise<s
     }
   }
 
-  // Try stdin if no command line text provided
   if (stdinText && !process.stdin.isTTY) {
     return stdinText;
   }
@@ -174,7 +173,6 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  // Read stdin if available
   let stdinText = '';
   if (!process.stdin.isTTY) {
     stdinText = await new Promise<string>((resolve) => {
@@ -186,18 +184,15 @@ async function main(): Promise<void> {
   }
 
   const input = await readInput(args.file, stdinText);
-
-  // Use command line text, or fall back to stdin
   const text = args.input || input;
 
   if (!text) {
     console.error('Error: No input provided.');
-    console.error('Usage: caveman [options] <text>');
-    console.error('Try "caveman --help" for more information.');
+    console.error('Usage: caveman-plus [options] <text>');
+    console.error('Try "caveman-plus --help" for more information.');
     process.exit(1);
   }
 
-  // Load config unless explicitly disabled
   const config = args.noConfig ? {} : loadConfig();
   const options = mergeConfig(config, {
     mode: args.mode,
@@ -208,7 +203,6 @@ async function main(): Promise<void> {
   const result = compress(text, options);
   console.log(result);
 
-  // Show stats if requested
   if (args.stats) {
     showStats(text, result);
   }

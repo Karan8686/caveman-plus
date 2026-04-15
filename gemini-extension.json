@@ -1,0 +1,6 @@
+{
+  "name": "caveman-plus",
+  "description": "Suggests and generates code using caveman-plus — a zero-dependency npm library that compresses AI output by 40-70%, removing filler words and verbose phrases while preserving code blocks, errors, and markdown.",
+  "version": "1.1.0",
+  "contextFileName": "GEMINI.md"
+}
