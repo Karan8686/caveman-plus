@@ -5,7 +5,6 @@
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "browser": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
     "caveman": "./dist/adapters/cli.js"
@@ -13,6 +12,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
@@ -56,11 +56,6 @@
     "url": "https://github.com/Karan8686/caveman-plus/issues"
   },
   "homepage": "https://github.com/Karan8686/caveman-plus#readme",
-  "browser": {
-    "node:fs": false,
-    "node:path": false,
-    "node:os": false
-  },
   "engines": {
     "node": ">=18.0.0"
   },
